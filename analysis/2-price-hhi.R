@@ -4,7 +4,7 @@
 # ECON 771 Exercise 4
 # Author:         Shirley Cai 
 # Date created:   03/25/2024 
-# Last edited:    04/13/2024 
+# Last edited:    04/15/2024 
 
 # Run regressions --------------------------------------------------------------
 
@@ -14,13 +14,16 @@ source("analysis/support/regression-helpers.R")
 vars <- c("beds")
 felist <- c("provider_number", "year")
 
-zip_fe <- feols(getFormula("price", "zip_hhi", vars, felist), data = df)
-hrr_fe <- feols(getFormula("price", "hrr_hhi", vars, felist), data = df)
-mkt_fe <- feols(getFormula("price", "mkt_hhi", vars, felist), data = df)
+zip_fe <- feols(getFormula("price", "zip_hhi", c(vars, "zip_tot_hosp"), felist), 
+                data = df)
+hrr_fe <- feols(getFormula("price", "hrr_hhi", c(vars, "hrr_tot_hosp"), felist), 
+                data = df)
+mkt_fe <- feols(getFormula("price", "mkt_hhi", c(vars, "mkt_tot_hosp"), felist), 
+                data = df)
 
 # Format table -----------------------------------------------------------------
 
-models <- list("(1)" = zip_fe, "(2)" = hrr_fe, "(3)" = mkt_fe)
+models <- list("(1) ZIP" = zip_fe, "(2) HRR" = hrr_fe, "(3) Community" = mkt_fe)
 
 gof_map <- tribble(
   ~raw,          ~clean,          ~fmt,     ~omit,

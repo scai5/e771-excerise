@@ -4,7 +4,7 @@
 # ECON 771 Exercise 4
 # Author:         Shirley Cai 
 # Date created:   02/27/2024 
-# Last edited:    04/13/2024 
+# Last edited:    04/15/2024 
 
 # Import HCRIS and crosswalks --------------------------------------------------
 
@@ -56,14 +56,16 @@ HCRIS.df <- HCRIS.df %>%
   group_by(year, zip) %>% 
   mutate(zip_tot_discharges = sum(tot_discharges, na.rm = TRUE),
          zip_share = tot_discharges / zip_tot_discharges,
-         zip_hhi = sum(zip_share^2, na.rm = TRUE))
+         zip_hhi = sum(zip_share^2, na.rm = TRUE), 
+         zip_tot_hosp = n())
 
 # Create HRR market shares and HHI
 HCRIS.df <- HCRIS.df %>% 
   group_by(year, hrr) %>% 
   mutate(hrr_tot_discharges = sum(tot_discharges, na.rm = TRUE),
          hrr_share = tot_discharges / hrr_tot_discharges,
-         hrr_hhi = sum(hrr_share^2, na.rm = TRUE))
+         hrr_hhi = sum(hrr_share^2, na.rm = TRUE),
+         hrr_tot_hosp = n())
 
 # Community detection algorithm ------------------------------------------------
 
@@ -82,7 +84,8 @@ HCRIS.df <- HCRIS.df %>%
   group_by(year, mkt) %>% 
   mutate(mkt_tot_discharges = sum(tot_discharges, na.rm = TRUE),
          mkt_share = tot_discharges / mkt_tot_discharges,
-         mkt_hhi = sum(mkt_share^2, na.rm = TRUE))
+         mkt_hhi = sum(mkt_share^2, na.rm = TRUE), 
+         mkt_tot_hosp = n())
 
 # Adding price -----------------------------------------------------------------
 
@@ -96,11 +99,17 @@ HCRIS.df <- HCRIS.df %>%
   )
 
 message("Price variable ----------")
-message(paste0("Total number of observations: ", nrow(HCRIS.df)))
-message(paste0("Total number of unique hospitals: ", length(unique(HCRIS.df$provider_number))))
 message(paste0("Number of observations with missing price: ", sum(is.na(HCRIS.df$price))))
 message(paste0("Number of hospitals with missing price in any year: ", 
                length(unique(HCRIS.df$provider_number[is.na(HCRIS.df$price)]))))
+message(paste0("Number of observations with negative price: ", sum(HCRIS.df$price < 0, na.rm = TRUE)))
+message(paste0("Number of observations with price > 100,000: ", sum(HCRIS.df$price > 100000, na.rm = TRUE)))
+HCRIS.df <- HCRIS.df %>% filter(price >=0, price <= 100000)
+message("Removed observations with missing, negative, and outlier price")
+
+message("Final dataframe ----------")
+message(paste0("Total number of observations: ", nrow(HCRIS.df)))
+message(paste0("Total number of unique hospitals: ", length(unique(HCRIS.df$provider_number))))
 
 # Export -----------------------------------------------------------------------
 
