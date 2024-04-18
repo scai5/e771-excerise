@@ -1,5 +1,5 @@
 # ECON 771 Empirical Exercise 4
-This repository contains all code to complete empirical exercise 4 for ECON 771. This exercise examines the effect of market definition on hospital demand estimation. For assignment details, see the [class website](https://econ771s24.classes.ianmccarthyecon.com/assignments/exercise4.html). This repository does not contain any data files.
+This repository contains all code to complete empirical exercise 4 for ECON 771. This exercise examines the effect of market definition on hospital demand estimation. For assignment details, see the [class website](https://econ771s24.classes.ianmccarthyecon.com/assignments/exercise4.html). 
 
 ## Data
 
@@ -9,7 +9,7 @@ This repository contains all code to complete empirical exercise 4 for ECON 771.
 
 3. **ZIP code to county FIPS crosswalk:** Crosswalk available for the fourth quarter of years 2010-2019. Files from the [US Department of Housing and Urban Development](https://www.huduser.gov/portal/datasets/usps_crosswalk.html). I use the crosswalk for years 2010-2017 to account for any ZIP codes that change over time. Data from 2000-2009 is matched using the 2010 crosswalk. 
 
-4. **Community-detected markets to county crosswalk:** Community detection defined markets are based on patient flows from the Hospital Service Area Files (HSAF), as in [John Graves' repo](https://github.com/graveja0/health-care-markets/). Raw HSAF data is used to form markets using code from [Ian McCarthy's hospital market repo](https://github.com/imccart/hospital-markets/). I directly use the export of this repo, which is provided in the class folder. 
+4. **Community-detected markets to county crosswalk:** Community detection defined markets are based on patient flows from the Hospital Service Area Files (HSAF), as in [John Graves' repo](https://github.com/graveja0/health-care-markets/). Raw HSAF data is used to form markets using code from [Ian McCarthy's hospital market repo](https://github.com/imccart/hospital-markets/). I directly use the export of this repo provided in the class folder. 
 
 ## Code 
 

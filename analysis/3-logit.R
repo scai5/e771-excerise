@@ -13,7 +13,6 @@ source("analysis/support/regression-helpers.R")
 vars <- c("beds", "uncomp_care_cost", "bad_debt")
 felist <- c("provider_number", "year")
 
-# Estimate using OLS 
 zip.ols <- feols(getFormula("log(zip_share)", "price", vars, felist), data = df)
 hrr.ols <- feols(getFormula("log(hrr_share)", "price", vars, felist), data = df)
 mkt.ols <- feols(getFormula("log(mkt_share)", "price", vars, felist), data = df)
@@ -25,12 +24,14 @@ alpha.zip <- coef(zip.ols)["price"]
 alpha.hrr <- coef(hrr.ols)["price"]
 alpha.mkt <- coef(mkt.ols)["price"]
 
-# Own-price elasticity = -(price param)(1 - share) price
-elas.zip <- mean(-alpha.zip * (1 - df$zip_share) * df$price, na.rm = TRUE)
-elas.hrr <- mean(-alpha.hrr * (1 - df$hrr_share) * df$price, na.rm = TRUE)
-elas.mkt <- mean(-alpha.mkt * (1 - df$mkt_share) * df$price, na.rm = TRUE)
+sample <- df %>% filter(!is.na(beds), !is.na(uncomp_care_cost), !is.na(bad_debt))
 
-# Format table -----------------------------------------------------------------
+# Own-price elasticity = -(price param)(1 - share) price
+elas.zip <- mean(-alpha.zip * (1 - sample$zip_share) * sample$price, na.rm = TRUE)
+elas.hrr <- mean(-alpha.hrr * (1 - sample$hrr_share) * sample$price, na.rm = TRUE)
+elas.mkt <- mean(-alpha.mkt * (1 - sample$mkt_share) * sample$price, na.rm = TRUE)
+
+# Format tables ----------------------------------------------------------------
 
 models <- list("ZIP" = zip.ols, "HRR" = hrr.ols, "Community" = mkt.ols)
 
@@ -59,7 +60,7 @@ tab <- modelsummary(models,
 
 tab <- tab %>% 
   tab_header(
-    title = md("**Multinomial Logit Estimation**")
+    title = md("Multinomial Logit Estimation")
   ) %>% 
   tab_source_note(
     source_note = "All models include hospital and year FE."
@@ -83,7 +84,7 @@ tab_short <- modelsummary(models,
 
 tab_short <- tab_short %>% 
   tab_header(
-    title = md("**Multinomial Logit Estimation**")
+    title = md("Multinomial Logit Estimation")
   ) %>% 
   tab_source_note(
     source_note = "All models include number of beds, cost of uncompensated care, bad debt, and hospital and year FE."

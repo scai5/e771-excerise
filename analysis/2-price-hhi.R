@@ -13,12 +13,9 @@ source("analysis/support/regression-helpers.R")
 vars <- c("beds", "uncomp_care_cost", "bad_debt")
 felist <- c("provider_number", "year")
 
-zip.fe <- feols(getFormula("price", "zip_hhi", c(vars, "zip_tot_hosp"), felist), 
-                data = df)
-hrr.fe <- feols(getFormula("price", "hrr_hhi", c(vars, "hrr_tot_hosp"), felist), 
-                data = df)
-mkt.fe <- feols(getFormula("price", "mkt_hhi", c(vars, "mkt_tot_hosp"), felist), 
-                data = df)
+zip.fe <- feols(getFormula("price", "zip_hhi", c(vars, "zip_tot_hosp"), felist), data = df)
+hrr.fe <- feols(getFormula("price", "hrr_hhi", c(vars, "hrr_tot_hosp"), felist), data = df)
+mkt.fe <- feols(getFormula("price", "mkt_hhi", c(vars, "mkt_tot_hosp"), felist), data = df)
 
 # Format table -----------------------------------------------------------------
 
@@ -45,7 +42,7 @@ tab <- modelsummary(models,
 
 tab <- tab %>% 
   tab_header(
-    title = md("**Hospital Price and Market Concentration Association**")
+    title = md("Hospital Price and Market Concentration Association")
   ) %>% 
   tab_source_note(
     source_note = "Market size is measured by number of hospitals in the market. 
@@ -68,10 +65,10 @@ tab_short <- modelsummary(models,
 
 tab_short <- tab_short %>% 
   tab_header(
-    title = md("**Hospital Price and Market Concentration Association**")
+    title = md("Hospital Price and Market Concentration Association")
   ) %>% 
   tab_source_note(
-    source_note = "All models include number of beds, cost of uncompensated care, bad debt, and hospital and year FE."
+    source_note = "All models include number of beds, cost of uncompensated care, bad debt, number of hospitals in the market, and hospital and year FE."
   ) %>% 
   tab_spanner(
     label = "Price", 
