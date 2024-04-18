@@ -40,6 +40,16 @@ message(paste0("Unknown discharges hospitals: ",
 HCRIS.df <- HCRIS.df %>% filter(!is.na(tot_discharges))
 message("Removed observations with missing total discharges")
 
+message("Negative total patient revenue ----------")
+message(paste0("Unknown patient revenue hospital-year obs.: ", sum(is.na(HCRIS.df$tot_pat_rev))))
+message(paste0("Unknown patient revenue hospitals: ", 
+               length(unique(HCRIS.df$provider_number[is.na(HCRIS.df$tot_pat_rev)]))))
+message(paste0("Negative patient revenue hospital-year obs.: ", sum(HCRIS.df$tot_pat_rev < 0, na.rm = TRUE)))
+message(paste0("Negative patient revenue hospitals: ", 
+               length(unique(HCRIS.df$provider_number[HCRIS.df$tot_pat_rev < 0]))))
+HCRIS.df <- HCRIS.df %>% filter(tot_pat_rev > 0)
+message("Removed observations with missing or negative total patient revenue")
+
 # Merge with ZIP HSA HRR crosswalk
 HCRIS.df <- HCRIS.df %>% 
   mutate(zip = substr(zip, 1, 5)) %>% 
@@ -95,7 +105,8 @@ HCRIS.df <- HCRIS.df %>%
     discount_factor = 1 - tot_discounts / tot_charges, 
     price_num = (ip_charges + icu_charges + ancillary_charges) * discount_factor - tot_mcare_payment, 
     price_denom = tot_discharges - mcare_discharges, 
-    price = price_num / price_denom
+    price = price_num / price_denom, 
+    ptile_price = ntile(price, 100)
   )
 
 message("Price variable ----------")
@@ -105,13 +116,16 @@ message(paste0("Number of hospitals with missing price in any year: ",
 message(paste0("Number of observations with negative price: ", sum(HCRIS.df$price < 0, na.rm = TRUE)))
 message(paste0("Number of observations with price > 100,000: ", sum(HCRIS.df$price > 100000, na.rm = TRUE)))
 HCRIS.df <- HCRIS.df %>% filter(price >=0, price <= 100000)
-message("Removed observations with missing, negative, and outlier price")
+message("Removed observations with missing, negative, or outlier price")
+
+# Redefine uncompensated care to "cost" 
+HCRIS.df <- HCRIS.df %>% mutate(uncomp_care_cost = uncomp_care * cost_to_charge)
+
+# Export -----------------------------------------------------------------------
 
 message("Final dataframe ----------")
 message(paste0("Total number of observations: ", nrow(HCRIS.df)))
 message(paste0("Total number of unique hospitals: ", length(unique(HCRIS.df$provider_number))))
-
-# Export -----------------------------------------------------------------------
 
 write_tsv(HCRIS.df, "data/output/final_hosp_mkt.txt")
 rm(list = ls())
